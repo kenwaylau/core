@@ -1,0 +1,22 @@
+
+
+
+
+.ecp-body .line{
+  width: 100%;
+  background: #e2e0e0;
+  height: 1px;
+  margin-bottom: 15px;
+}
+
+.ecp-body .well {
+  padding: 10px;
+  border: 1px solid #e2e0e0;
+  background: #fff;
+}
+.ecp-body .title2 {
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 14px;
+  font-weight: bold;
+}
