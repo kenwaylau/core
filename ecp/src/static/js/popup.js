@@ -1,139 +1,74 @@
 
 
-$(function (){
+
+init();
 
 
-    var $t_set = $('#t-set'),
-        $t_start = $t_set.find('.btn-start'),
-        $t_stop = $t_set.find('.btn-stop'),
-        $t_save = $t_set.find('.btn-save'),
-        $other = $('#other-set'),
-        $other_save = $other.find('.btn-save'),
+
+function init(){
+    var $config = $('#config'),
+        config = {},
         ls = localStorage,
-        alert_timeout  = 0,
-        is_mathch_url = false,
-        $tips = $('.alert-success')
+        $c_start = $config.find('.btn-start'),
+        $tips = $('.alert-success'),
+        $btn_update = $config.find('.btn-update'),
+        alert_timeout = 0,
+        $config_item = $('.form-control'),
+        config_names = '',
+        $c_stop = $config.find('.btn-stop')
 
-    chrome.tabs.getSelected(function(tabs)
-    {
-        if (tabs.url.indexOf(ls['reg-url']) != -1){
-            is_mathch_url = true;
+
+
+
+    $config_item.each(function (k,v){
+        var $cur,name
+        $cur = $config_item.eq(k);
+        name = $cur.attr('name');
+        config_names += ','+name;
+        if (ls[name]){
+            $cur.val(ls[name]);
         }
+    })
+    ls['config_names'] = config_names.slice(1);
+
+
+
+    $c_start.click(function (){
+        $c_stop.show();
+        $c_start.hide();
+        save_config();
+        ecp.trigger('start',function _return(data){
+            console.log(data.n);
+        });
+        tips_alert($tips,'正在开始...')
     });
 
-    ecp.trigger('init',function callback(data){
-
+    $c_stop.click(function (){
+        $c_stop.hide();
+        $c_start.show();
+        ecp.trigger('stop');
+        tips_alert($tips,'正在结束...')
     })
 
-    init();
+
+    $btn_update.click(function (){
+        save_config();
+        ecp.trigger('update');
+        tips_alert($tips,'更新成功...同时通知content')
+    })
 
 
-    function init(){
-        var $fControl = $('.form-control'),
-            config_names = '';
-
-        $fControl.each(function (k,v){
-            var $cur = $fControl.eq(k),
-                name  = $cur.attr('name');
-            config_names += name +',';
-            $cur.val(ls[name] ? ls[name] : ls[name] = '');
-        })
-        ls['config_names'] = config_names.slice(0,config_names.length - 1);
-
-        ecp.on('btn-stop',function (){
-            $t_stop.click();
-        })
-
-        ecp.trigger('get_task_sta',function callback(task){
-            if (task.sta == 'start'){
-                $t_start.hide();
-                $t_stop.show();
-                $t_save_off();
-            }else{
-                $t_start.show();
-                $t_stop.hide();
-                $t_save_on();
-            }
-        })
-
-    }
-
-    //开始按钮
-    $t_start.click(function (){
-        if (!is_mathch_url){
-            tips_alert($tips,'不允许在当前域名运行!');
-            return;
+    function save_config(){
+        var i
+        config = ecp_common.getFormData($config);
+        for(i in config){
+            ls[i] = config[i];
         }
-        starting();
-        $(this).hide();
-        $t_stop.show();
-        $t_save_off();
-        tips_alert($tips,'开始工作中....');
-    })
-
-    function $t_save_on(){
-        $t_save.addClass('btn-primary');
-        $t_save.removeClass('btn-default');
-    }
-    function $t_save_off(){
-        $t_save.addClass('btn-default');
-        $t_save.removeClass('btn-primary');
-    }
-
-    //工作区保存按钮
-    $t_save.click(function (){
-        var formData,i;
-        if ($t_save.hasClass('btn-primary')){
-            formData = ecp_common.getFormData($t_set);
-            for(i in formData){
-                ls[i] = formData[i];
-            }
-            ecp.trigger('update_config');
-            tips_alert($tips,'保存成功....');
-        }
-
-
-    })
-
-    //停止按钮
-    $t_stop.click(function (){
-        $(this).hide();
-        $t_start.show();
-        window.scroll(0,0);
-        $t_save_on();
-        stoped();
-        tips_alert($tips,'正在停止....');
-    })
-
-    //保存按钮
-    $other_save.click(function (){
-        var formData,i
-        formData = ecp_common.getFormData($other);
-        for(i in formData){
-            ls[i] = formData[i];
-        }
-        tips_alert($tips,'保存成功....')
-    })
-
-
-    function starting(){
-        ecp.trigger('starting')
-    }
-
-    function stoped(){
-        ecp.trigger('stoped')
     }
 
 
-   /* $btn_save.click(function (){
-        var data = ecp_common.getFormData($set),
-            i;
-        for(i in data){
-            ls['set_'+i] = data[i];
-        }
-        send({type: "p_save"});
-        tips_alert($tips_success,'保存成功');
-    })*/
+
+
 
 
     //提示
@@ -146,6 +81,15 @@ $(function (){
         },1500)
 
     }
+}
 
 
-})
+
+
+
+
+
+
+
+
+

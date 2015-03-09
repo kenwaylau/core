@@ -13,7 +13,16 @@
 
     
     //返回配置值
-    ecp.on('get_config',get_config)
+    ecp.on('get_config',get_config);
+
+    ecp.on('get_tab',function (callback){
+        callback(1111)
+    })
+    
+    /*runScript.run(function (){
+        alert(11111)
+    })*/
+
 
 
     //生成配置信息
@@ -23,7 +32,7 @@
         names.forEach(function (v,k){
             config[v] = ls[v]
         })
-        return config;
+        return {config:config};
     }
     
 }())
