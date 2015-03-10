@@ -2,6 +2,16 @@
  * Created by way on 15/3/5.
  * 作者 : 刘嘉威
  * 邮箱:425530758@qq.com
+ *
+ *
+ * 更新时间:2015/3/10
+ * 版本:v1.0.1
+ *
+ * 1、事件改为双向通信
+ * 2、添加off方法
+ * 3、添加str对象
+ * 4、自触发观察者
+ *
  */
 
 (function (){
@@ -94,7 +104,7 @@
 
     
     chrome.extension.onRequest.addListener(function(req, sender, res) {
-        var ecp_event,_return,cur_event,param
+        var ecp_event,_return = {},cur_event,param
         //console.log(req)
         if (req._ecp_event_){
             param = req.param
@@ -121,40 +131,55 @@
                     param[k] =  eval(_eval)
                 }
             })
-
-            _return = ecp.eList[ecp_event].apply(this,param) || {}
+            _extend(_return,req.local_return);
+            ecp.eList[ecp_event].forEach(function (v,k){
+                _extend(_return,(v.apply(this,param) || {}))
+            })
             res(_extend(_return,{_sender:sender}));
 
+
         }
-      
+
     });
 
 
     //添加事件
     ecp.on = function (eventName,fn){
+        var name,list,queue
         if (!fn){
             return
         }
-        ecp.eList[get_prefix(eventName)] = fn;
+        list = ecp.eList;
+        name = get_prefix(eventName);
+        queue = list[name]
+        if (!queue){
+            list[name] = [];
+        }
+        list[name].push(fn);
+        return list[name].length - 1
     }
 
     //移除事件
-    ecp.off = function (eventName){
+    ecp.off = function (eventName,eventId){
         var list,name
         list = ecp.eList;
         name = get_prefix(eventName);
         if (list[name]){
-            delete ecp.eList[name];
+            if (eventId != undefined){
+                list[name].splice(eventId,1);
+            }else{
+                delete ecp.eList[name];
+            }
         }
     }
 
     //触发事件
     ecp.trigger = function (eventName){
-        var _param={},arg,callBack
+        var _param={},arg,callBack,elist = ecp.eList,local_return = {};
         _param.tempFnNum = [];
         arg =  (Array.prototype.slice.call(arguments)).slice(1);
         arg.forEach(function (v,k){
-            var num = ecp.eList.tempFnNum
+            var num = elist.tempFnNum
             _param.tempFnNum.push(num);
 
             if (_type(v) == 'function' && /^function _return\(/i.test(v.toString())){
@@ -166,9 +191,12 @@
                 ;(function (){
                     var copy = arg[k]
                     ecp.on('temp_'+num,function (){
-                        var _arg = arguments
-                        ecp.off('temp_'+ num);
-                        copy.call(this,_arg);
+                        var _arg
+                        _arg = Array.prototype.slice.call(arguments);
+                        setTimeout(function(){
+                            ecp.off('temp_'+ num);
+                        },1000)
+                        copy.apply(this,_arg);
                     });
                     ecp.eList.tempFnNum++;
                     arg[k] = '@ecp_fn '+ v.toString();
@@ -177,15 +205,28 @@
 
         })
         callBack = callBack || function(){};
+
+        //console.log(_extend(_param,arg))
+
+        ;(function (){
+            var curEvent = elist[get_prefix(eventName)]
+            if (curEvent){
+                curEvent.forEach(function (v,k){
+                    _extend(local_return,v.apply(function(){},arg));
+                })
+            }
+        }());
+
         _extend(_param,{
             _ecp_event_ : eventName,
+            local_return : local_return,
             param : arg
         })
-        //console.log(_extend(_param,arg))
+
 
 
         if (chrome.tabs){
-            chrome.tabs.getSelected(function(tab){
+            chrome.tabs.getSelected(null,function(tab){
                 extenSend();
                 chrome.tabs.sendRequest(tab.id, _extend(_param,arg), callBack);
             })
@@ -207,24 +248,27 @@
         return fn.toString().match(/(^ \($)+/i);
     }*/
 
-    ecp.on('init',function (){
-        return {}
-    });
 
-    if (!chrome.tabs){
-        ecp.trigger('init',function _return(data){
+
+    if (chrome.tabs){
+        ecp.on('ecp_init',function (){
+            return {}
+        });
+    }else{
+        ecp.trigger('ecp_init',function _return(data){
             if (!data){
                 setTimeout(function(){
                     location.reload();
                 },100)
             }
         });
-
     }
 
     ecp.str.insert = function (str,start,content){
         return str.slice(0,start) + content +  str.slice(start);
     }
+
+
 
     ecp.type = _type;
     ecp.isPlainObject = _isPlainObject;

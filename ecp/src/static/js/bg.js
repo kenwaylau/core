@@ -5,25 +5,13 @@
     var ls = localStorage,
         config = {}
 
-
-
-    ecp.on('init',function (){
-        return ecp.extend({config : get_config()})
+    ecp.on('ecp_init',function (){
+        return ecp.extend({},get_config())
     })
 
-    
+
     //返回配置值
     ecp.on('get_config',get_config);
-
-    ecp.on('get_tab',function (callback){
-        callback(1111)
-    })
-    
-    /*runScript.run(function (){
-        alert(11111)
-    })*/
-
-
 
     //生成配置信息
     function get_config(){

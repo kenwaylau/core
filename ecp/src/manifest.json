@@ -11,9 +11,7 @@
     "background": {
         "matches":["*://*/*"],
         "scripts": [
-            "static/js/jquery_2.0.3.js",
-            "static/js/ecp_v1.0.0.js",
-            "static/js/runScript.js",
+            "static/js/ecp.js",
             "static/js/bg.js"
         ]
     },
@@ -39,7 +37,7 @@
         "matches":["*://*/*"],
         "js":[
             "static/js/jquery_2.0.3.js",
-            "static/js/ecp_v1.0.0.js",
+            "static/js/ecp.js",
             "static/js/content.js"
         ]
 

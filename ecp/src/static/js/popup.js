@@ -32,29 +32,55 @@ function init(){
     ls['config_names'] = config_names.slice(1);
 
 
+    ecp.trigger('get_work_sta',function _return(data){
+        var sta = data.is_work;
+        if (sta){
+            btn_start()
+            tips_alert($tips,'还在工作中...')
+        }else{
+            btn_stop();
+        }
+    })
 
-    $c_start.click(function (){
+
+    ecp.on('start',function (){
+        btn_start();
+        tips_alert($tips,'工作中...')
+    })
+
+
+    ecp.on('stop',function (tip){
+        btn_stop();
+        if (tip){
+            tips_alert($tips,tip)
+        }
+    })
+
+    function btn_start(){
         $c_stop.show();
         $c_start.hide();
+    }
+    function btn_stop(){
+        $c_stop.hide();
+        $c_start.show();
+    }
+
+
+
+    $c_start.click(function (){
         save_config();
-        ecp.trigger('start',function _return(data){
-            console.log(data.n);
-        });
-        tips_alert($tips,'正在开始...')
+        ecp.trigger('start');
     });
 
     $c_stop.click(function (){
-        $c_stop.hide();
-        $c_start.show();
-        ecp.trigger('stop');
-        tips_alert($tips,'正在结束...')
-    })
+        ecp.trigger('stop','手动停止 -- 来自popup.js');
+    });
 
 
     $btn_update.click(function (){
         save_config();
         ecp.trigger('update');
-        tips_alert($tips,'更新成功...同时通知content')
+        tips_alert($tips,'更新成功并且通知content.js')
     })
 
 
@@ -65,10 +91,6 @@ function init(){
             ls[i] = config[i];
         }
     }
-
-
-
-
 
 
     //提示
