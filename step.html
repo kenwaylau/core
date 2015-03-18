@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>step.js-demo</title>
+</head>
+<body>
+
+
+</body>
+</html>
+<script src="step.js"></script>
+<script src="jquery_2.0.3.js"></script>
+
+<script>
+    var step1 = new step();
+    var num = 0
+    step1.loop = true;
+    step1.onStart = function (){
+        console.log('\n\r到达了第一个步骤，触发onStart事件');
+    }
+    step1.onEnd = function (){
+        console.log('到达了最后一个步骤，触发onEnd事件');
+        console.log('完成了第'+step1.loopNum+'次循环');
+        console.log('删除队列中的第一个步骤');
+        /*if (num == 0){
+            num = 1
+            step1.prev();
+        }*/
+        setTimeout(function(){
+            if (step1.loopNum >= 1){
+                step1.remove(0);
+            }
+           step1.next();
+        },500)
+    }
+
+    step1.add(function (){
+        $.ajax({
+            url : 'data/step.json',
+            type : 'get',
+            success : function (){
+                console.log('第1步结束，准备第2步');
+                /*if (num == 0){
+                    step1.cur();
+                    num++;
+                    return
+                }*/
+                step1.next();
+            }
+        })
+    },function (){
+        $.ajax({
+            url : 'data/step.json',
+            success : function (){
+                console.log('第2步结束，准备第3步');
+                step1.next();
+                //step1.prev();
+            }
+        })
+    },function (){
+        console.log('第3步结束,准备下一次循环\n');
+
+    });
+    console.log(step1)
+    step1.cur();
+
+
+
+
+</script>

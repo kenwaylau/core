@@ -5,10 +5,6 @@
     var ls = localStorage,
         config = {}
 
-    ecp.on('ecp_init',function (){
-        return ecp.extend({},get_config())
-    })
-
 
     //返回配置值
     ecp.on('get_config',get_config);

@@ -18,8 +18,6 @@ function init(){
         $c_stop = $config.find('.btn-stop')
 
 
-
-
     $config_item.each(function (k,v){
         var $cur,name
         $cur = $config_item.eq(k);
