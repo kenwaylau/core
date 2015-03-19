@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>滑动手势-demo</title>
+</head>
+
+<style>
+    *{margin: 0;padding: 0}
+    body {
+        height: 700px;
+    }
+    .top{
+        display: inline-block;
+        background-color: #f4f4f4;
+        color: #565656;
+        padding: 10px;
+        position: fixed;
+    }
+    .top span{
+        color: darkred;
+    }
+    .top-item{
+        margin-bottom: 10px;
+        width: 49%;
+        float: left;
+        list-style: none;
+    }
+    #main{
+        background-color: #3edb80;
+        width: 70px;
+        height: 70px;
+        position: absolute;
+        top:202px;
+    }
+    .footer{
+        width: 100%;
+        background: #565656;
+        position: fixed;
+        bottom: 0px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        color: #fff;
+    }
+</style>
+<body>
+    <ul class="top">
+        <li class="top-item" id="startX">startX = <span class="text"></span></li>
+        <li class="top-item" id="startY">startY = <span class="text"></span></li>
+        <li class="top-item" id="px">px = <span class="text"></span></li>
+        <li class="top-item" id="py">py = <span class="text"></span></li>
+        <li class="top-item" id="cx">cx = <span class="text"></span></li>
+        <li class="top-item" id="cy">cy = <span class="text"></span></li>
+        <li class="top-item" id="sx">sx = <span class="text"></span></li>
+        <li class="top-item" id="sy">sy = <span class="text"></span></li>
+        <li class="top-item" id="ax">ax = <span class="text"></span></li>
+        <li class="top-item" id="ay">ay = <span class="text"></span></li>
+        <li class="top-item" id="dx">dx = <span class="text"></span></li>
+        <li class="top-item" id="dy">dy = <span class="text"></span></li>
+        <li class="top-item" id="endX">endX = <span class="text"></span></li>
+        <li class="top-item" id="endY">endY = <span class="text"></span></li>
+    </ul>
+
+    <div id="main"></div>
+
+    <div class="footer">底部</div>
+
+</body>
+</html>
+<script src="slip.js"></script>
+<script src="jquery_2.0.3.js"></script>
+
+<script>
+    var $main = document.getElementById('main')
+    var $$main = $($main);
+    var $spans = $('.top-item span');
+    var x=0,y=0
+
+
+    var slip1 = new slip({
+        root : $main,
+        onStart : function (e){
+          console.log('触发了start事件');
+            x = $$main.offset().left ;
+            y = $$main.offset().top  ;
+        },
+        onMove : function (e){
+            var slip = e.slip, i,num= 0,
+                mx = x+slip.sx,
+                my = y + slip.sy
+            for (i in slip){
+                $spans.eq(num).text(slip[i]);
+                num++;
+            }
+
+            $$main.css({
+                left : mx,
+                top : my
+            })
+        },
+        onEnd : function (e){
+            console.log('触发了end事件');
+            x = $$main.offset().left ;
+            y = $$main.offset().top  ;
+        },
+        onMinTime : function (e){
+            console.log('触发了最小滑动时间事件')
+        },
+        onMinDit : function (e){
+            console.log('触发了最小滑动距离事件')
+        } 
+    })
+
+    setTimeout(function(){
+        var copy = slip1.onMove
+        slip1.onMove = function (e){
+            console.log('更改了onMove事件')
+            copy(e);
+        }
+    },2000)
+
+
+
+</script>
