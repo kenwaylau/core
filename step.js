@@ -4,10 +4,10 @@
  * 邮箱:425530758@qq.com
  *
  * 步骤管理器
- * 更新时间:2015/01/12
- * 版本:v1.0.1
+ * 更新时间:2015/03/21
+ * 版本:v1.0.2
  *
- *
+ * 1、next,prev,cur可以传参数
  *
  */
 
@@ -60,29 +60,30 @@ step.prototype.remove = function (num){
     }
 
 }
-
 //下一步
-step.prototype.next = function (callback){
+step.prototype.next = function (){
+
     this.pointer++;
-    return this.run(callback);
+    return this.run.apply(this,Array.prototype.slice.apply(arguments));
 }
 
 //上一步
-step.prototype.prev = function (callback){
+step.prototype.prev = function (){
     this.pointer--;
-    return this.run(callback);
+    return this.run.apply(this,Array.prototype.slice.apply(arguments));
 }
 //执行当前步骤
-step.prototype.cur = function (callback){
+step.prototype.cur = function (){
     if (this.pointer <= -1){
         this.pointer = 0;
     }
-    return this.run(callback);
+    return this.run.apply(this,Array.prototype.slice.apply(arguments));
 }
 
 //步骤执行
-step.prototype.run = function (callback){
+step.prototype.run = function (){
     var cur_pointer,pointer,isEnd,isStart,_return,
+        arg = Array.prototype.slice.apply(arguments),
         list = this.list,
         type = step._type
     pointer = this.pointer;
@@ -105,13 +106,12 @@ step.prototype.run = function (callback){
         }
     }
     if (type(cur_pointer) == 'function'){
-        _return = cur_pointer();
+        _return = cur_pointer.apply(window,arg);
     }else{
         _return = cur_pointer
     }
     isStart ? this.onStart() : '';
     isEnd ? this.onEnd() : '';
-    callback ? callback() : '';
     return _return;
 }
 
