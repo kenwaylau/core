@@ -5,12 +5,9 @@
  *
  *
  * 更新时间:2015/3/10
- * 版本:v1.0.1
+ * 版本:v1.0.2
  *
- * 1、事件改为双向通信
- * 2、添加off方法
- * 3、添加str对象
- * 4、自触发观察者
+ * 1、修正扩展区与扩展区的通信问题
  *
  */
 
@@ -227,8 +224,11 @@
 
         if (chrome.tabs){
             chrome.tabs.getSelected(null,function(tab){
-                extenSend();
-                chrome.tabs.sendRequest(tab.id, _extend(_param,arg), callBack);
+                if (tab.url.indexOf('chrome-extension://') != -1){
+                    extenSend();
+                }else{
+                    chrome.tabs.sendRequest(tab.id, _extend(_param,arg), callBack);
+                }
             })
         }else{
             extenSend();
