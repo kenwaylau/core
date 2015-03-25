@@ -1,13 +1,13 @@
 {
     "name": "ECP",
 
-    "version": "1.0.0",
+    "version": "1.0.3",
 
     "manifest_version": 2,
 
     "description": "",
 
-
+    "options_page": "popup.html",
     "background": {
         "matches":["*://*/*"],
         "scripts": [

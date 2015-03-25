@@ -1,11 +1,22 @@
 
 
 
-init();
+ecp.trigger('ecp_init',function _return(data){
+    var test_url = 'http://kenwaylau.com/ecp'
+    chrome.tabs.getSelected(null,function (tab){
+        if (tab.url != test_url){
+            chrome.tabs.update(tab.id,{
+                url : test_url
+            });
+        }
+        init(data)
+    })
+})
 
 
 
-function init(){
+
+function init(info){
     var $config = $('#config'),
         config = {},
         ls = localStorage,
@@ -17,6 +28,7 @@ function init(){
         config_names = '',
         $c_stop = $config.find('.btn-stop')
 
+    debugger
 
     $config_item.each(function (k,v){
         var $cur,name
@@ -67,6 +79,7 @@ function init(){
 
     $c_start.click(function (){
         save_config();
+        btn_start();
         ecp.trigger('start');
     });
 

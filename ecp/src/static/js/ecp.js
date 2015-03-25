@@ -4,17 +4,43 @@
  * 邮箱:425530758@qq.com
  *
  *
- * 更新时间:2015/3/10
- * 版本:v1.0.2
+ * 更新时间:2015/3/25
+ * 版本:v1.0.3
  *
- * 1、修正扩展区与扩展区的通信问题
+ * 1、增加appId、_root_、manifest基本信息
+ * 2、修复混合工作区的通信问题
+ * 3、修复自检测问题
  *
  */
 
 (function (){
-    var ecp = {}
+    var ecp = {},
+        bg,
+        _root_ = chrome.extension.getURL(''),
+        manifest;
+
+    appId = chrome.runtime.id
+    manifest = chrome.runtime.getManifest();
+    if (!manifest.content_security_policy || manifest.content_security_policy.indexOf('unsafe-eval') == -1){
+        alert('请在manifest.json文件加上\n"content_security_policy": "script-src self unsafe-eval object-src self"');
+        return
+    }
+
+
+    epf = _root_.match(/.*\/\/+?/i)[0];
     ecp.str = {}
+    window.ecp = ecp;
     ecp.eList = {};
+
+
+
+    ecp._root_ = _root_;
+    ecp.appId = appId;
+    ecp.manifest = manifest;
+    ecp.type = _type;
+    ecp.isPlainObject = _isPlainObject;
+    ecp.extend = _extend;
+
     ecp.eList.tempFnNum = 0;
 
     function _type(obj) {
@@ -223,10 +249,9 @@
 
 
         if (chrome.tabs){
+            extenSend();
             chrome.tabs.getSelected(null,function(tab){
-                if (tab.url.indexOf('chrome-extension://') != -1){
-                    extenSend();
-                }else{
+                if (tab.url.indexOf(epf) == -1){
                     chrome.tabs.sendRequest(tab.id, _extend(_param,arg), callBack);
                 }
             })
@@ -247,34 +272,41 @@
    /* function get_fn_name(fn){
         return fn.toString().match(/(^ \($)+/i);
     }*/
-
-
-
-    if (chrome.tabs){
-        ecp.on('ecp_init',function (){
-            return {}
-        });
-    }else{
-        ecp.trigger('ecp_init',function _return(data){
-            if (!data){
-                setTimeout(function(){
-                    location.reload();
-                },100)
-            }
-        });
-    }
+    
 
     ecp.str.insert = function (str,start,content){
         return str.slice(0,start) + content +  str.slice(start);
     }
 
 
+    window.ecp_init = true;
+    if (chrome.extension.getBackgroundPage){
+        bg = chrome.extension.getBackgroundPage();
+        !bg.ecp_init ? reload() : '';
+        if (!bg.ecp_init){
+            setTimeout(function(){
+                location.reload();
+            },100)
+        }
+        if (bg === window){
+            ecp.on('ecp_init',function (){
+                return {}
+            });
+        }
+    }else{
+        ecp.trigger('ecp_init',function _return(data){
+            !data ? reload() : '';
+        })
+    }
 
-    ecp.type = _type;
-    ecp.isPlainObject = _isPlainObject;
-    ecp.extend = _extend;
-    window.ecp = ecp;
-    
+    function reload(){
+        setTimeout(function(){
+            location.reload();
+        },100)
+    }
+
+
+
 
 })();
 
