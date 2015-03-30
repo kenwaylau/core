@@ -1,6 +1,7 @@
 /**
  * Sea.js 3.0.0 | seajs.org/LICENSE.md
  * seajs支持链式写法
+<<<<<<< HEAD
  *
  * seajs主要功能是cmd模块引入，而引入模块有两种情况
  * 1、使用seajs.use
@@ -8,6 +9,8 @@
  * 因为是两种环境下引入，但都需要依赖同一个mod树，所以define引入，会用save方法进行数据同步
  * define的寻找依赖是逐个字符串查找，所以要注意"'"的使用，也就是require的参数不能是变量。匹配出路径数组后交给module模块加入成mod数，供各个上下文使用。
  *
+=======
+>>>>>>> 4fe40ea43a60ddc5415595e427f40a4d08e3b4ce
  */
 (function(global, undefined) {
 
