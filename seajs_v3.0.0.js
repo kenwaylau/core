@@ -6,7 +6,7 @@
  * 1、使用seajs.use
  * 2、使用define
  * 因为是两种环境下引入，但都需要依赖同一个mod树，所以define引入，会用save方法进行数据同步
- * define的寻找依赖是逐个字符串查找，所以要注意"'"的使用，也就是require的参数不能是变量。匹配出路径数组后交给module模块加入成mod数，供各个上下文使用。
+ * define的寻找依赖是逐个字符串查找，所以要注意"'"的使用，也就是require的参数不能是变量。匹配出路径数组后交给module模块加入成mod树，供各个上下文使用。
  *
  */
 (function(global, undefined) {
