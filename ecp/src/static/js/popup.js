@@ -28,7 +28,6 @@ function init(info){
         config_names = '',
         $c_stop = $config.find('.btn-stop')
 
-    debugger
 
     $config_item.each(function (k,v){
         var $cur,name
