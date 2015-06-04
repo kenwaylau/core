@@ -8,6 +8,7 @@
  * 版本:v1.0.2
  *
  * 1、next,prev,cur可以传参数
+   test
  *
  */
 
